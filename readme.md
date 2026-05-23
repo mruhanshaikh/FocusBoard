@@ -1,4 +1,4 @@
-# 🚀 FocusBoard – Productivity Dashboard
+# 🚀 FocusBoard
 
 FocusBoard is a fully responsive, multi-feature productivity web application built using **Vanilla JavaScript, SCSS, and modern Web APIs**.
 
