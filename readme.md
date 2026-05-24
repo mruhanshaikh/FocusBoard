@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # FocusBoard – Productivity Dashboard
+=======
+# 🚀 FocusBoard
+>>>>>>> e9dca63a2f5a5f560c0c28afceb26478f7d1e789
 
 A fully client-side productivity app built with Vanilla JS, SCSS, and modern Web APIs. No frameworks, no build tools beyond SCSS compilation — just well-structured vanilla code.
 
