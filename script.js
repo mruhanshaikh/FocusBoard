@@ -1,3 +1,151 @@
+function authPage() {
+  const AUTH = {
+    USERS_KEY: 'fb_users',
+    SESSION_KEY: 'fb_session',
+
+    getUsers() {
+      return JSON.parse(localStorage.getItem(this.USERS_KEY)) || [];
+    },
+
+    saveUsers(users) {
+      localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
+    },
+
+    register(email, password) {
+      const users = this.getUsers();
+      if (users.find(u => u.email === email)) return { ok: false, msg: 'Email already registered.' };
+      if (password.length < 8) return { ok: false, msg: 'Password must be at least 8 characters.' };
+      users.push({ email, password });
+      this.saveUsers(users);
+      return { ok: true, msg: 'Account created! You can now log in.' };
+    },
+
+    login(email, password) {
+      const user = this.getUsers().find(u => u.email === email);
+      if (!user) return { ok: false, msg: 'No account found with that email.' };
+      if (user.password !== password) return { ok: false, msg: 'Incorrect password.' };
+      sessionStorage.setItem(this.SESSION_KEY, email);
+      return { ok: true };
+    },
+
+    isLoggedIn() { return sessionStorage.getItem(this.SESSION_KEY) !== null; },
+    currentUser() { return sessionStorage.getItem(this.SESSION_KEY); },
+    logout() { sessionStorage.removeItem(this.SESSION_KEY); }
+  };
+
+  let activeTab = 'login';
+
+  function checkStrength(password) {
+    const el = document.getElementById('authStrength');
+    if (!password) { el.textContent = ''; el.className = 'auth-strength'; return false; }
+
+    const hasMin     = password.length >= 8;
+    const hasUpper   = /[A-Z]/.test(password);
+    const hasSpecial = /[^a-zA-Z0-9]/.test(password);
+    const passed     = [hasMin, hasUpper, hasSpecial].filter(Boolean).length;
+
+    const msgs = {
+      1: ['weak',   '⚠ Weak — needs length, uppercase & special char'],
+      2: ['medium', '◑ Almost — missing ' + (!hasMin ? '8+ chars' : !hasUpper ? 'uppercase' : 'special char')],
+      3: ['strong', '✓ Strong']
+    };
+
+    const [cls, msg] = msgs[passed];
+    el.className = `auth-strength ${cls}`;
+    el.textContent = msg;
+    return passed === 3;
+  }
+
+  function switchTab(tab) {
+    activeTab = tab;
+    document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+    document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+    document.getElementById('confirmField').style.display = tab === 'register' ? 'flex' : 'none';
+    document.getElementById('authSubmit').textContent = tab === 'login' ? 'Login' : 'Create account';
+    clearMessages();
+    const el = document.getElementById('authStrength');
+    el.textContent = '';
+    el.className = 'auth-strength';
+  }
+
+  function showError(msg) {
+    document.getElementById('authError').textContent = msg;
+    document.getElementById('authSuccess').textContent = '';
+  }
+
+  function showSuccess(msg) {
+    document.getElementById('authSuccess').textContent = msg;
+    document.getElementById('authError').textContent = '';
+  }
+
+  function clearMessages() {
+    document.getElementById('authError').textContent = '';
+    document.getElementById('authSuccess').textContent = '';
+  }
+
+  function showApp() {
+    document.getElementById('authGate').style.display = 'none';
+    document.querySelector('main').style.display = 'flex';
+    document.querySelector('.logout-btn').style.display = 'block';
+  }
+
+  function hideApp() {
+    document.querySelector('main').style.display = 'none';
+    document.querySelector('.logout-btn').style.display = 'none';
+  }
+
+  window.authLogout = () => {
+    AUTH.logout();
+    window.location.reload();
+  };
+
+  window.authSwitchTab = (tab) => switchTab(tab);
+
+  hideApp();
+
+  document.getElementById('authPassword').addEventListener('input', e => {
+    if (activeTab === 'register') checkStrength(e.target.value);
+    else {
+      const el = document.getElementById('authStrength');
+      el.textContent = '';
+      el.className = 'auth-strength';
+    }
+  });
+    document.getElementById('authConfirm').addEventListener('input', () => {
+    const el = document.getElementById('authStrength');
+    el.textContent = '';
+    el.className = 'auth-strength';
+  });
+
+  document.getElementById('authForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const email    = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value;
+    const confirm  = document.getElementById('authConfirm').value;
+
+    if (!email || !password) { showError('Please fill in all fields.'); return; }
+
+    if (activeTab === 'register') {
+      if (!checkStrength(password)) { showError('Password is too weak.'); return; }
+      if (password !== confirm) { showError('Passwords do not match.'); return; }
+      const result = AUTH.register(email, password);
+      if (!result.ok) { showError(result.msg); return; }
+      showSuccess(result.msg);
+      switchTab('login');
+    } else {
+      const result = AUTH.login(email, password);
+      if (!result.ok) { showError(result.msg); return; }
+      showApp();
+    }
+  });
+
+  document.getElementById('tabLogin')?.addEventListener('click', () => switchTab('login'));
+  document.getElementById('tabRegister')?.addEventListener('click', () => switchTab('register'));
+
+  if (AUTH.isLoggedIn()) showApp();
+}
+authPage();
+
 function homePage() {
   let allbox = document.querySelectorAll(".showcase .box");
   let allopenbox = document.querySelectorAll(".openBox");
