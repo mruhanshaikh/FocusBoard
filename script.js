@@ -1,3 +1,4 @@
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 function authPage() {
   const AUTH = {
     USERS_KEY: 'fb_users',
