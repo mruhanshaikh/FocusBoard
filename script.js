@@ -15,7 +15,7 @@ function authPage() {
     register(email, password) {
       const users = this.getUsers();
       if (users.find(u => u.email === email)) return { ok: false, msg: 'Email already registered.' };
-      if (password.length <= 8) return { ok: false, msg: 'Password must be at least 8 characters.' };
+      if (password.length < 8) return { ok: false, msg: 'Password must be at least 8 characters.' };
       users.push({ email, password });
       this.saveUsers(users);
       return { ok: true, msg: 'Account created! You can now log in.' };
@@ -29,10 +29,7 @@ function authPage() {
       return { ok: true };
     },
 
-    isLoggedIn() { return sessionStorage.getItem(this.SESSION_KEY) !== null; },
-    currentUser() { return sessionStorage.getItem(this.SESSION_KEY); },
-    logout() { sessionStorage.removeItem(this.SESSION_KEY); }
-  };
+   
 
   let activeTab = 'login';
 
