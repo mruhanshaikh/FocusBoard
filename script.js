@@ -29,7 +29,10 @@ function authPage() {
       return { ok: true };
     },
 
-   
+    isLoggedIn() { return sessionStorage.getItem(this.SESSION_KEY) !== null; },
+    currentUser() { return sessionStorage.getItem(this.SESSION_KEY); },
+    logout() { sessionStorage.removeItem(this.SESSION_KEY); }
+  };
 
   let activeTab = 'login';
 
