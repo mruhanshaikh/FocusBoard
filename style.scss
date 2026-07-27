@@ -854,7 +854,12 @@ main {
         min-height: 1rem;
       }
 
-      .auth-submit {
+      .login-btns {
+        display:flex;
+        justify-content: space-between;
+        gap:1rem;
+      }
+       .auth-submit {
         width: 100%;
         border-radius: 0.5rem;
         text-transform: uppercase;
@@ -870,7 +875,7 @@ main {
         &:hover {
           opacity: 0.85;
         }
-      }
+      } 
     }
   }
 }

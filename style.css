@@ -963,6 +963,11 @@ main .openBox .goal-mid-wrapper .notes .note textarea::placeholder {
   color: #70c070;
   min-height: 1rem;
 }
+.auth-gate .auth-card .auth-form .login-btns {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
 .auth-gate .auth-card .auth-form .auth-submit {
   width: 100%;
   border-radius: 0.5rem;

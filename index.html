@@ -5,42 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FocusBoard All-in-One Productivity Dashboard</title>
     <meta
-    name="description"
-    content="FocusBoard is an all-in-one productivity dashboard with todo lists, Kanban boards, Pomodoro timer, daily planning, notes, weather, and motivation—built to help you stay focused every day."
-    >
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="FocusBoard – All-in-One Productivity Dashboard">
+      name="description"
+      content="FocusBoard is an all-in-one productivity dashboard with todo lists, Kanban boards, Pomodoro timer, daily planning, notes, weather, and motivation—built to help you stay focused every day."
+    />
+    <meta property="og:type" content="website" />
     <meta
-    property="og:description"
-    content="Plan tasks, manage projects, stay focused with Pomodoro, and organize your day—all from one clean, customizable board."
-    >
-    <meta property="og:url" content="https://focusboardd.netlify.app/">
-    
-    <meta name="author" content="FocusBoard">
-    <meta name="theme-color" content="#0f172a">
+      property="og:title"
+      content="FocusBoard – All-in-One Productivity Dashboard"
+    />
+    <meta
+      property="og:description"
+      content="Plan tasks, manage projects, stay focused with Pomodoro, and organize your day—all from one clean, customizable board."
+    />
+    <meta property="og:url" content="https://focusboardd.netlify.app/" />
+
+    <meta name="author" content="FocusBoard" />
+    <meta name="theme-color" content="#0f172a" />
     <link
       href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
-    <link rel="shortcut icon" href="assets/favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="assets/favicon.png" type="image/x-icon" />
   </head>
   <body>
-     <section class="auth-gate" id="authGate">
+    <section class="auth-gate" id="authGate">
       <div class="auth-card">
- 
         <div class="auth-brand">
           <h1>FocusBoard</h1>
           <p>sign in to continue</p>
         </div>
 
         <div class="auth-tabs">
-          <button class="auth-tab active" id="tabLogin"  onclick="authSwitchTab('login')">Login</button>
-          <button class="auth-tab"        id="tabRegister" onclick="authSwitchTab('register')">Register</button>
+          <button
+            class="auth-tab active"
+            id="tabLogin"
+            onclick="authSwitchTab('login')"
+          >
+            Login
+          </button>
+          <button
+            class="auth-tab"
+            id="tabRegister"
+            onclick="authSwitchTab('register')"
+          >
+            Register
+          </button>
         </div>
- 
+
         <form class="auth-form" id="authForm" onsubmit="return false;">
- 
           <div class="auth-field">
             <label for="authEmail">Email</label>
             <input
@@ -51,7 +64,7 @@
               required
             />
           </div>
- 
+
           <div class="auth-field">
             <label for="authPassword">Password</label>
             <input
@@ -63,7 +76,7 @@
             />
           </div>
           <p class="auth-strength" id="authStrength"></p>
-          <div class="auth-field" id="confirmField" style="display:none;">
+          <div class="auth-field" id="confirmField" style="display: none">
             <label for="authConfirm">Confirm password</label>
             <input
               type="password"
@@ -72,28 +85,35 @@
               autocomplete="new-password"
             />
           </div>
- 
+
           <p class="auth-error" id="authError"></p>
           <p class="auth-success" id="authSuccess"></p>
- 
-          <button class="auth-submit" id="authSubmit" type="submit">
-            Login
+
+          <div class="login-btns">
+            <button class="auth-submit" id="authSubmit" type="submit">
+              Login
+            </button>
+            <button class="auth-submit" id="forgotPasswordBtn" type="button"  onclick="forgotPassword()">
+              Forgot
+            </button>
+          </div>
+          <button class="auth-submit" id="signInWithGoogle" type="button" onclick="googleSignIn()">
+              login with google
           </button>
- 
         </form>
       </div>
     </section>
-    <main style="display:none">
+    <main style="display: none">
       <section class="daytimewheater-sec">
-         <div class="left">
-           <!-- dynamic data -->
+        <div class="left">
+          <!-- dynamic data -->
         </div>
         <div class="center">
           <button class="fetch-btn">Fetch :- Days || Time || Wheather</button>
         </div>
         <div class="right">
-           <!-- dynamic data -->
-        </div>  
+          <!-- dynamic data -->
+        </div>
       </section>
       <section class="showcase">
         <div class="box" id="0">
@@ -121,8 +141,7 @@
             >Sticky Notes</span
           >
         </div>
-        <div class="fixedtheme">
-        </div>
+        <div class="fixedtheme"></div>
       </section>
       <section class="mq-sec">
         <div class="quote-box">
@@ -276,10 +295,10 @@
         </div>
         <section class="goal-mid-wrapper">
           <div class="top">
-            <input id="searchbar" type="search" placeholder="search notes">
+            <input id="searchbar" type="search" placeholder="search notes" />
             <span class="addnote"><i class="ri-add-large-fill"></i></span>
           </div>
-            <div class="notes">
+          <div class="notes">
             <!-- <div class="note">
               <div class="bar">
                  <input type="text"  class="notesname" name="nname"  id="nname" placeholder="Title">
@@ -287,13 +306,18 @@
               </div>
               <textarea name="desc" class="notesdesc" id="ndesc" placeholder="Note"></textarea>
             </div> -->
-            </div>
+          </div>
         </section>
       </section>
     </main>
-        <button style="display:none" class="logout-btn" id="logoutBtn" onclick="authLogout()">
-          <i class="ri-logout-box-r-line"></i> logout
-        </button>
+    <button
+      style="display: none"
+      class="logout-btn"
+      id="logoutBtn"
+      onclick="authLogout()"
+    >
+      <i class="ri-logout-box-r-line"></i> logout
+    </button>
     <script type="module" src="script.js"></script>
   </body>
 </html>

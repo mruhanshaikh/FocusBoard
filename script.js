@@ -1,39 +1,100 @@
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged,  sendPasswordResetEmail, signInWithPopup} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+import {auth, provider } from "./firebase.js"
 function authPage() {
-  const AUTH = {
-    USERS_KEY: 'fb_users',
-    SESSION_KEY: 'fb_session',
+  // const AUTH = {
+  //   USERS_KEY: 'fb_users',
+  //   SESSION_KEY: 'fb_session',
 
-    getUsers() {
-      return JSON.parse(localStorage.getItem(this.USERS_KEY)) || [];
-    },
+  //   getUsers() {
+  //     return JSON.parse(localStorage.getItem(this.USERS_KEY)) || [];
+  //   },
 
-    saveUsers(users) {
-      localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
-    },
+  //   saveUsers(users) {
+  //     localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
+  //   },
 
-    register(email, password) {
-      const users = this.getUsers();
-      if (users.find(u => u.email === email)) return { ok: false, msg: 'Email already registered.' };
-      if (password.length < 8) return { ok: false, msg: 'Password must be at least 8 characters.' };
-      users.push({ email, password });
-      this.saveUsers(users);
-      return { ok: true, msg: 'Account created! You can now log in.' };
-    },
+  //   register(email, password) {
+  //     const users = this.getUsers();
+  //     if (users.find(u => u.email === email)) return { ok: false, msg: 'Email already registered.' };
+  //     if (password.length < 8) return { ok: false, msg: 'Password must be at least 8 characters.' };
+  //     users.push({ email, password });
+  //     this.saveUsers(users);
+  //     return { ok: true, msg: 'Account created! You can now log in.' };
+  //   },
 
-    login(email, password) {
-      const user = this.getUsers().find(u => u.email === email);
-      if (!user) return { ok: false, msg: 'No account found with that email.' };
-      if (user.password !== password) return { ok: false, msg: 'Incorrect password.' };
-      sessionStorage.setItem(this.SESSION_KEY, email);
-      return { ok: true };
-    },
+  //   login(email, password) {
+  //     const user = this.getUsers().find(u => u.email === email);
+  //     if (!user) return { ok: false, msg: 'No account found with that email.' };
+  //     if (user.password !== password) return { ok: false, msg: 'Incorrect password.' };
+  //     sessionStorage.setItem(this.SESSION_KEY, email);
+  //     return { ok: true };
+  //   },
 
-    isLoggedIn() { return sessionStorage.getItem(this.SESSION_KEY) !== null; },
-    currentUser() { return sessionStorage.getItem(this.SESSION_KEY); },
-    logout() { sessionStorage.removeItem(this.SESSION_KEY); }
+  //   isLoggedIn() { return sessionStorage.getItem(this.SESSION_KEY) !== null; },
+  //   currentUser() { return sessionStorage.getItem(this.SESSION_KEY); },
+  //   logout() { sessionStorage.removeItem(this.SESSION_KEY); }
+  // };
+  function getAuthErrorMessage(error) {
+
+  const messages = {
+    "auth/email-already-in-use":
+      "This email is already registered.",
+
+    "auth/weak-password":
+      "Password is too weak.",
+
+    "auth/invalid-email":
+      "Please enter a valid email address.",
+
+    "auth/invalid-credential":
+      "Incorrect email or password.",
+
+    "auth/user-disabled":
+      "Your account has been disabled.",
+
+    "auth/too-many-requests":
+      "Too many attempts. Please try again later.",
+
+    "auth/network-request-failed":
+      "Check your internet connection.",
+
+    "auth/operation-not-allowed":
+      "This login method is unavailable."
   };
 
+
+  return messages[error.code] || "Something went wrong. Please try again.";
+}
+  async function forgotPassword() {
+
+  const email = document.getElementById('authEmail').value.trim();
+
+  if (!email) {
+    showError("Please enter your email first.");
+    return;
+  }
+
+  try {
+
+    await sendPasswordResetEmail(auth, email);
+
+    showSuccess("Password reset email sent. Check your inbox.");
+
+  } catch (error) {
+
+    showError(getAuthErrorMessage(error));
+
+  }
+
+}
+  async function googleSignIn(){
+  try {
+    const result = await signInWithPopup(auth, provider);
+  } catch(error){
+    showError(getAuthErrorMessage(error))
+  }
+
+}
   let activeTab = 'login';
 
   function checkStrength(password) {
@@ -63,6 +124,10 @@ function authPage() {
     document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
     document.getElementById('confirmField').style.display = tab === 'register' ? 'flex' : 'none';
     document.getElementById('authSubmit').textContent = tab === 'login' ? 'Login' : 'Create account';
+    document.getElementById('forgotPasswordBtn').style.display =
+    tab === 'login' ? 'block' : 'none';
+    document.getElementById('signInWithGoogle').style.display =
+    tab === 'login' ? 'block' : 'none';
     clearMessages();
     const el = document.getElementById('authStrength');
     el.textContent = '';
@@ -95,12 +160,15 @@ function authPage() {
     document.querySelector('.logout-btn').style.display = 'none';
   }
 
-  window.authLogout = () => {
-    AUTH.logout();
+  window.authLogout = async() => {
+    // AUTH.logout();
+    await signOut(auth);
     window.location.reload();
   };
 
   window.authSwitchTab = (tab) => switchTab(tab);
+  window.forgotPassword = forgotPassword;
+  window.googleSignIn=googleSignIn;
 
   hideApp();
 
@@ -118,7 +186,7 @@ function authPage() {
     el.className = 'auth-strength';
   });
 
-  document.getElementById('authForm').addEventListener('submit', e => {
+  document.getElementById('authForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email    = document.getElementById('authEmail').value.trim();
     const password = document.getElementById('authPassword').value;
@@ -129,21 +197,38 @@ function authPage() {
     if (activeTab === 'register') {
       if (!checkStrength(password)) { showError('Password is too weak.'); return; }
       if (password !== confirm) { showError('Passwords do not match.'); return; }
-      const result = AUTH.register(email, password);
-      if (!result.ok) { showError(result.msg); return; }
-      showSuccess(result.msg);
-      switchTab('login');
+      // const result = AUTH.register(email, password);
+      // if (!result.ok) { showError(result.msg); return; }
+      try{
+         await createUserWithEmailAndPassword(auth, email, password);
+         showSuccess("Account created! You can now log in");
+         switchTab('login');
+      }catch(error){
+         showError(getAuthErrorMessage(error));
+      }
     } else {
-      const result = AUTH.login(email, password);
-      if (!result.ok) { showError(result.msg); return; }
-      showApp();
+      // const result = AUTH.login(email, password);
+      // if (!result.ok) { showError(result.msg); return; }
+      try{
+        await signInWithEmailAndPassword(auth, email, password);
+        showApp();
+      }catch(error){
+        showError(getAuthErrorMessage(error));
+      }
     }
   });
 
   document.getElementById('tabLogin')?.addEventListener('click', () => switchTab('login'));
   document.getElementById('tabRegister')?.addEventListener('click', () => switchTab('register'));
 
-  if (AUTH.isLoggedIn()) showApp();
+  // if (AUTH.isLoggedIn()) showApp();
+  onAuthStateChanged(auth, (user) => {
+  if (user) {
+    showApp();
+  } else {
+    hideApp();
+  }
+});
 }
 authPage();
 
@@ -472,7 +557,7 @@ async function fetchQuote(){
     console.error(error);
   }
   finally{
-    console.log('Data Fetched Sucessfully');
+    // console.log('Data Fetched Sucessfully');
   }
 }
 fetchQuote();
