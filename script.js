@@ -1,5 +1,6 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged,  sendPasswordResetEmail, signInWithPopup} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-import {auth, provider } from "./firebase.js"
+import {auth, provider, db } from "./firebase.js"
+import {collection,addDoc,getDocs,deleteDoc,doc,updateDoc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 function authPage() {
   // const AUTH = {
   //   USERS_KEY: 'fb_users',
