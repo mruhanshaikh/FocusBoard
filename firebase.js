@@ -1,6 +1,5 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
   import { getAuth, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-  import { getFirestore} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
   const firebaseConfig = {
     apiKey: "AIzaSyA-l3vBYEnj45dZkW9evLEJrpjIAGRc2OA",
     authDomain: "focusboard-67e75.firebaseapp.com",
@@ -12,6 +11,5 @@
   };
   const app = initializeApp(firebaseConfig);
   export const provider = new GoogleAuthProvider();
-  export const db = getFirestore(app)
   export const auth = getAuth(app)
  
